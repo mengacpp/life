@@ -142,8 +142,18 @@ void parse_args(int argc, char *argv[])
         }
     }
 
-    rows = scr_rows + border * 2;
-    cols = scr_cols + border * 2;
+    if(pacman)
+    {
+        rows = scr_rows;
+        cols = scr_cols;
+        border = 0;
+        despawn_border = 0;
+    }
+    else 
+    {
+        rows = scr_rows + border * 2;
+        cols = scr_cols + border * 2;
+    }
 
     buf_rows = scr_rows;
     buf_cols = (scr_cols * aspect_ratio) + 1;
@@ -199,11 +209,12 @@ void iterate(bool grid[], bool changed[], uint64_t *iter)
         } 
     }
 
-    for (size_t row = 1; row < rows - 1; ++row) {
-        for (size_t col = 1; col < cols - 1; ++col) {
+    int offset = pacman ? 0 : 1;
+    for (size_t row = offset; row < rows - offset; ++row) {
+        for (size_t col = offset; col < cols - offset; ++col) {
             size_t id = get_id(col, row);
 
-            if(*iter % despawn_freq == 0)
+            if(!pacman && *iter % despawn_freq == 0)
             {
                 if(row < despawn_border || row > rows - despawn_border)
                 {
